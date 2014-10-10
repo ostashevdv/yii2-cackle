@@ -1,35 +1,40 @@
 yii2-cackle
 ===========
 ** В РАЗРАБОТКЕ! НЕ ИСПОЛЬЗОВАТЬ! **
-yii2-cackle extension 
 
-Библиотека для работы с виджетами комментариев Cackle.
+Библиотека для работы с виджетами Cackle.
 
 
-Installation
+Установка
 ------------
-
-The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
-
-Either run
-
-```
-php composer.phar require --prefer-dist ostashevdv/yii2-cackle "*"
-```
-
-or add
-
+Добавьте в секцию require вашего файла `composer.json`
 ```
 "ostashevdv/yii2-cackle": "*"
 ```
 
-to the require section of your `composer.json` file.
-
-
-Usage
+Использование
 -----
-
-Once the extension is installed, simply use it in your code by  :
-
+**Виджет комментариев**
 ```php
-<?= \ostashevdv\cackle\AutoloadExample::widget(); ?>```
+<?php
+    echo Html::tag('div','',['id'=>'mc-container']);
+    \ostashevdv\cackle\Widget::widget(['widget'=>[
+            'comment' => [
+                'widget'=>'Comment',
+                'id'=>1,
+                'channel'=>12355,
+                'container'=>'mc-container',
+                'ssoProvider' => [
+                    'name'=> 'Sign-in by ajax.me',
+                    'url'=> 'http://ajax.me/sign',
+                    'logo'=> 'http://ajax.me/logo.png',
+                    'width'=> 64,
+                    'height'=> 64
+                ],
+                'callback' => [
+                    'create' => '[function(comment) { console.log(comment); }]',
+                    'edit' => '[function(comment) { console.log(comment); }]'
+                ]
+            ]
+    ]])
+?>
