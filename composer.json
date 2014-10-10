@@ -17,5 +17,11 @@
         "psr-4": {
             "ostashevdv\\cackle\\": ""
         }
-    }
+    },
+    "repositories":[
+        {
+            "type": "git",
+            "url": "https://github.com/ostashevdv/yii2-cackle.git"
+        }
+    ]
 }
