@@ -1,0 +1,21 @@
+{
+    "name": "ostashevdv/yii2-cackle",
+    "description": "yii2-cackle extension ",
+    "type": "yii2-extension",
+    "keywords": ["yii2","extension"," comment"," cackle"],
+    "license": "BSD-4-Clause",
+    "authors": [
+        {
+            "name": "ostashevdv",
+            "email": "ostashevdv@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "ostashevdv\\cackle\\": ""
+        }
+    }
+}
