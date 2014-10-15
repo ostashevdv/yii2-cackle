@@ -10,7 +10,6 @@ namespace ostashevdv\cackle;
 
 class Module extends \yii\base\Module
 {
-
     public  $siteId;
     public  $accountAPIKey;
     public  $siteAPIKey;
