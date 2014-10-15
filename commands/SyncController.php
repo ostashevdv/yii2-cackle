@@ -5,14 +5,13 @@ namespace ostashevdv\cackle\commands;
 use ostashevdv\cackle\models\Comment;
 use yii\db\IntegrityException;
 use yii\helpers\Json;
-use yii\helpers\StringHelper;
 use yii\console\Controller;
 
-class CommentController extends Controller
+class SyncController extends Controller
 {
-    public function actionSync()
+    public function actionIndex()
     {
-        $since = strtotime(Comment::find()->max('modified'));
+        $since = strtotime(Comment::find()->max('dateModify'));
 
         $this->curlInit();
         $url = $this->getUrl();
@@ -77,35 +76,53 @@ class CommentController extends Controller
     {
         foreach($comments as $comment) {
             $q = \Yii::$app->db->createCommand();
-            $comment['channel'] = strtr($comment['channel'], [
-                    '/fullnews_'=>'/news/',
-                    '.html' => '/'
-                ]);
             try {
                 $q->insert(Comment::tableName(),[
                         'id'        => $comment['id'],
+                        'pubStatus' => ( strtolower($comment['status'])=='approved') ? 1 : 0,
+                        'pubStatus' => function($comment){
+                                switch(strtolower($comment['status'])) {
+                                    case 'approved' : return Comment::STATUS_APPROVED;
+                                        break;
+                                    case 'pending' : return Comment::STATUS_PENDING;
+                                        break;
+                                    case 'spam' : return Comment::STATUS_SPAM;
+                                        break;
+                                    case 'deleted' : return Comment::STATUS_DELETED;
+                                        break;
+                                    default :   return Comment::STATUS_PENDING;
+                                }
+                            },
                         'channel'   => $comment['channel'],
-                        'comment'   => $comment['message'],
-                        'date'      => $comment['created'],
+                        'message'   => $comment['message'],
+                        'dateCreate'=> strftime("%Y-%m-%d %H:%M:%S", $comment['created']/1000),
+                        'dateModify'=> strftime("%Y-%m-%d %H:%M:%S", $comment['modified']/1000),
                         'autor'     => $comment['author']['name'] ? :'',
                         'email'     => $comment['author']['email']? :'',
-                        'avatar'    => $comment['author']['avatar']? :'',
-                        'ip'        => $comment['ip'],
-                        'approve'   => ( strtolower($comment['status'])=='approved') ? 1 : 0,
-                        'user_agent'=> StringHelper::truncate($comment['userAgent'], 64),
-                        'modified'  => $comment['modified'],
                     ])->execute();
             } catch(IntegrityException $e){
                 $q->update(Comment::tableName(),[
-                        'comment'   => $comment['message'],
-                        'date'      => $comment['created'],
+                        'id'        => $comment['id'],
+                        'pubStatus' => ( strtolower($comment['status'])=='approved') ? 1 : 0,
+                        'pubStatus' => function($comment){
+                                switch(strtolower($comment['status'])) {
+                                    case 'approved' : return Comment::STATUS_APPROVED;
+                                        break;
+                                    case 'pending' : return Comment::STATUS_PENDING;
+                                        break;
+                                    case 'spam' : return Comment::STATUS_SPAM;
+                                        break;
+                                    case 'deleted' : return Comment::STATUS_DELETED;
+                                        break;
+                                    default :   return Comment::STATUS_PENDING;
+                                }
+                            },
+                        'channel'   => $comment['channel'],
+                        'message'   => $comment['message'],
+                        'dateCreate'=> strftime("%Y-%m-%d %H:%M:%S", $comment['created']/1000),
+                        'dateModify'=> strftime("%Y-%m-%d %H:%M:%S", $comment['modified']/1000),
                         'autor'     => $comment['author']['name'] ? :'',
                         'email'     => $comment['author']['email']? :'',
-                        'avatar'    => $comment['author']['avatar']? :'',
-                        'ip'        => $comment['ip'],
-                        'approve'   => ( strtolower($comment['status'])=='approved') ? 1 : 0,
-                        'user_agent'=> StringHelper::truncate($comment['userAgent'], 64),
-                        'modified'  => $comment['modified'],
                     ],
                     [
                         'id'=>$comment['id']

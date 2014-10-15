@@ -5,29 +5,41 @@ namespace ostashevdv\cackle\models;
 use Yii;
 
 /**
- * This is the model class for table "{{%comment}}".
+ * This is the model class for table "comment".
  *
  * @property integer $id
+ * @property integer $pubStatus
  * @property string $channel
- * @property string $comment
- * @property string $date
+ * @property string $message
+ * @property string $dateCreate
+ * @property string $dateModify
  * @property string $autor
  * @property string $email
- * @property string $avatar
- * @property string $ip
- * @property integer $is_register
- * @property integer $approve
- * @property string $user_agent
- * @property integer $modified
  */
 class Comment extends \yii\db\ActiveRecord
 {
+    /** статусы комментария */
+    const STATUS_APPROVED  = 1;
+    const STATUS_PENDING = 0;
+    const STATUS_SPAM = -1;
+    const STATUS_DELETED = -2;
+
+    public static function getStatusArray()
+    {
+        return [
+            self::STATUS_APPROVED => 'Одобрен',
+            self::STATUS_PENDING  => 'В ожидании',
+            self::STATUS_SPAM     => 'Спам',
+            self::STATUS_DELETED  => 'Удалено'
+        ];
+    }
+
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return '{{%comment}}';
+        return 'comment';
     }
 
     /**
@@ -36,16 +48,21 @@ class Comment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            ['id', 'unique'],
-            [['channel', 'comment', 'autor', 'user_agent'], 'required'],
-            [['channel', 'comment'], 'string'],
-            [['date'], 'safe'],
-            [['date', 'modified'], 'date', 'format'=>'A'],
-            [['is_register', 'approve', 'modified'], 'integer'],
-            [['autor', 'email'], 'string', 'max' => 128],
-            [['avatar'], 'string', 'max' => 255],
-            [['ip'], 'string', 'max' => 16],
-            [['user_agent'], 'string', 'max' => 64]
+            ['pubStatus', 'integer'],
+            ['pubStatus', 'default', 'value' => self::STATUS_PENDING],
+            ['pubStatus', 'in', 'value' => array_keys(self::getStatusArray())],
+
+            ['channel', 'required'],
+            ['channel', 'string'],
+
+            ['message', 'required'],
+            ['message', 'string'],
+
+            ['dateCreate', 'date', 'format'=>'Y-m-d h:i:s'],
+            ['dateModify', 'date', 'format'=>'Y-m-d h:i:s'],
+
+            ['email', 'email'],
+            [['email','author'], 'string', 'max'=>128]
         ];
     }
 
@@ -56,18 +73,13 @@ class Comment extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'pubStatus' => 'Статус',
             'channel' => 'Канал',
-            'comment' => 'Комментарий',
-            'date' => 'Дата',
-            'autor' => 'автор',
+            'message' => 'Комментарий',
+            'dateCreate' => 'Создан',
+            'dateModify' => 'Изменен',
+            'autor' => 'Автор',
             'email' => 'email',
-            'avatar' => 'аватар',
-            'ip' => 'Ip',
-            'is_register' => 'Is Register',
-            'approve' => 'Approve',
-            'user_agent' => 'User Agent',
-            'modified' => 'Изменено'
         ];
     }
-
 }

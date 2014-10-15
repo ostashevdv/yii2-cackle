@@ -11,6 +11,22 @@ yii2-cackle
 ```
 "ostashevdv/yii2-cackle": "*"
 ```
+Добавьте в конфигурационный файл вашего приложения:
+```
+modules => [
+    'cackle' => [
+                'class' => ostashevdv\cackle\Module::className(),
+                'siteId' => YOUR_ID,
+                'accountAPIKey' => 'YOUR_KEY',
+                'siteAPIKey' => 'YOUR_KEY',
+            ],
+]
+```
+Более подробную информацию, как получить `accountAPIKey` и `siteAPIKey` Вы можете получить на странице [http://cackle.ru/help/comment-sync]
+Выполните миграцию:
+```
+php yii mgrate/up --migrationPath="@vendor/ostashevdv/yii2-cackle/migrations"
+```
 
 Использование
 -----
@@ -38,3 +54,10 @@ yii2-cackle
             ]
     ]])
 ?>
+
+**Синхронизация комментариев**
+Для запуска синхронизации комментариев, выполните консольную команду:
+```
+php yii cackle/sync
+```
+Более подробную информацию о механизме синхронизации Вы можете получить на странице [http://cackle.ru/help/comment-sync]
